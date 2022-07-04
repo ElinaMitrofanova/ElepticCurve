@@ -9,7 +9,7 @@ namespace ElipticCurves
         private BigInteger B;
         private BigInteger P;
         public ProjectivePoint PROJECTIVE_INF = new ProjectivePoint(BigInteger.Zero, BigInteger.One, BigInteger.Zero);
-        public AffinePoint AFFINE_INF = new AffinePoint(BigInteger.Zero, BigInteger.One); // change
+        public AffinePoint AFFINE_INF = new AffinePoint(BigInteger.Zero, BigInteger.Zero);
 
         static string HexToBin(string hexString)
         {
@@ -56,7 +56,7 @@ namespace ElipticCurves
             this.B = b;
             this.P = p;
         }
-        static BigInteger GenerateBigInteger(BigInteger max)
+        public  BigInteger GenerateBigInteger(BigInteger max)
         {
             Random rnd = new Random();
             byte[] maxBytes = max.ToByteArray(true, false);
@@ -246,6 +246,10 @@ namespace ElipticCurves
                 }
             }
             return r0;
+        }
+        public ProjectivePoint getSharedKey(ProjectivePoint point, BigInteger n)
+        {
+            return ScalarMultiplication(point, n);
         }
     }
 }
