@@ -103,4 +103,34 @@ public class Tests
         string roundtrip = _aes.DecryptStringFromBytes_Aes(encrypted, myAes.Key, myAes.IV);
         Assert.AreEqual(input, roundtrip);
     }
+
+    [Test]
+    public void Order()
+    {
+        _elipticCurve = new ElipticCurve(_parametrs.a, _parametrs.b, _parametrs.p);
+        AffinePoint point = _elipticCurve.createAffinePoint();
+        ProjectivePoint point1 = _elipticCurve.ToProjective(point);
+        while (_elipticCurve.CompareProjective(point1, _elipticCurve.PROJECTIVE_INF))
+        {
+            point = _elipticCurve.createAffinePoint();
+            point1 = _elipticCurve.ToProjective(point);
+
+        }
+        var result = _elipticCurve.ScalarMultiplication(point1, _parametrs.n);
+        Assert.AreEqual(true, _elipticCurve.CompareProjective(result, _elipticCurve.PROJECTIVE_INF));
+    }
+
+    [Test]
+    public void VerifySignature()
+    {
+        AffinePoint point = _elipticCurve.createAffinePoint();
+        ProjectivePoint point1 = _elipticCurve.ToProjective(point);
+        var secretKey = _elipticCurve.GenerateBigInteger(_parametrs.n);
+        var publicKey = _elipticCurve.ScalarMultiplication(point1, secretKey);
+        string input = "Mariupol is the best city on the planet";
+        var helper = new Helpers();
+        var signature = helper.Signature(input, point1, secretKey, _elipticCurve, _parametrs.n);
+        var verify = helper.Verify(input, signature, publicKey, _elipticCurve, _parametrs.n, point1);
+        Assert.AreEqual(true, verify);
+    }
 }
